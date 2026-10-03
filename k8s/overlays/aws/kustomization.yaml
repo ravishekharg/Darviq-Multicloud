@@ -1,0 +1,21 @@
+# AWS overlay: the same app as every other cloud, plus only what differs here.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+labels:
+  - pairs: {cloud: aws}
+    includeSelectors: false
+patches:
+  - target: {kind: Deployment, name: demo-app}
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: "Running on Amazon EKS"
+  - target: {kind: Service, name: demo-app}
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          # Network Load Balancer instead of the legacy Classic ELB.
+          service.beta.kubernetes.io/aws-load-balancer-type: nlb

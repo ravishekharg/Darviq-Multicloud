@@ -1,0 +1,12 @@
+# Exposed through each cloud's load balancer. The app holds no data and has
+# no login; restrict loadBalancerSourceRanges in an overlay for anything that does.
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app
+  namespace: darviq-demo
+spec:
+  type: LoadBalancer
+  selector: {app: demo-app}
+  ports:
+    - {name: http, port: 80, targetPort: http}

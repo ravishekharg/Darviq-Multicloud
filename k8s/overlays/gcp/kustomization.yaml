@@ -1,0 +1,21 @@
+# Google Cloud overlay: the same app as every other cloud, plus only what differs here.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+labels:
+  - pairs: {cloud: gcp}
+    includeSelectors: false
+patches:
+  - target: {kind: Deployment, name: demo-app}
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: "Running on Google GKE"
+  - target: {kind: Service, name: demo-app}
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          # Regional external passthrough Network Load Balancer, backend-service based.
+          cloud.google.com/l4-rbs: enabled
