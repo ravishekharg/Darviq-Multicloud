@@ -2,7 +2,8 @@
 
 [![validate](https://github.com/ravishekharg/Darviq-Multicloud/actions/workflows/validate.yml/badge.svg)](https://github.com/ravishekharg/Darviq-Multicloud/actions/workflows/validate.yml)
 
-One application, deployed the same way to **Amazon EKS**, **Azure AKS** and **Google GKE**.
+One application, built to deploy the same way to **Amazon EKS**, **Azure AKS** and
+**Google GKE**.
 Terraform builds a production-shaped Kubernetes cluster on each cloud; a shared Kustomize base
 deploys the app, and a thin overlay per cloud holds only what genuinely differs.
 
