@@ -1,3 +1,6 @@
+# Tenant and object ID of whoever runs Terraform (az login / service principal).
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_resource_group" "main" {
   name     = "${var.cluster_name}-rg"
   location = var.location
@@ -60,6 +63,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   # Microsoft Entra ID for user sign-in, with Kubernetes RBAC.
   azure_active_directory_role_based_access_control {
+    tenant_id          = data.azurerm_client_config.current.tenant_id
     azure_rbac_enabled = true
   }
 
@@ -85,8 +89,6 @@ resource "azurerm_role_assignment" "aks_pull" {
 }
 
 # The identity running Terraform gets cluster-admin through Azure RBAC.
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_role_assignment" "deployer_admin" {
   scope                = azurerm_kubernetes_cluster.main.id
   role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
