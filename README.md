@@ -13,8 +13,8 @@ Built by [Darviq Systems](https://darviq.com).
 
 ```
 terraform/
-  aws-eks/     VPC (private nodes, NAT), EKS + managed node group, EBS CSI driver (IRSA), ECR
-  azure-aks/   Resource group, VNet, AKS (Azure CNI overlay, managed identity, Entra ID RBAC), ACR
+  aws-eks/     VPC (private nodes, NAT), EKS + managed node group, EBS CSI driver (IRSA), metrics-server, ECR
+  azure-aks/   Resource group, VNet, zonal AKS (Azure CNI Overlay, managed identity, Entra ID + Azure RBAC), ACR
   gcp-gke/     VPC-native network, GKE Autopilot, Artifact Registry
 k8s/
   base/        Namespace, Deployment, Service, HPA, PodDisruptionBudget, NetworkPolicies
@@ -33,7 +33,8 @@ app shows which cloud it's on.
 
 | Concern | AWS (EKS) | Azure (AKS) | Google Cloud (GKE) |
 |---|---|---|---|
-| Nodes | Managed node group, private subnets | System node pool in a dedicated VNet | Autopilot (Google manages nodes) |
+| Nodes | Managed node group, private subnets in two zones | System node pool across three zones in a dedicated VNet | Autopilot (Google manages nodes) |
+| Metrics for autoscaling | metrics-server add-on | Built in | Built in |
 | Pod networking | VPC CNI | Azure CNI overlay | VPC-native, secondary ranges |
 | NetworkPolicy | VPC CNI network policy | Azure network policy | Dataplane V2 |
 | Image registry | ECR, scan on push | ACR, pulled via kubelet managed identity | Artifact Registry |

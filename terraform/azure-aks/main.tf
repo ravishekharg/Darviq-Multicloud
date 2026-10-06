@@ -12,8 +12,9 @@ resource "azurerm_resource_group" "main" {
 }
 
 # --- Network ---------------------------------------------------------------
-# A dedicated VNet and node subnet, so pods get VNet IPs through Azure CNI
-# (overlay mode keeps pod IPs out of the subnet's address space).
+# A dedicated VNet and node subnet. Nodes get IPs from the subnet; with Azure
+# CNI Overlay, pods get IPs from a separate private range, so the subnet only
+# has to be sized for nodes.
 resource "azurerm_virtual_network" "main" {
   name                = "${var.cluster_name}-vnet"
   location            = azurerm_resource_group.main.location
@@ -42,6 +43,9 @@ resource "azurerm_kubernetes_cluster" "main" {
     vm_size        = var.node_vm_size
     node_count     = var.node_count
     vnet_subnet_id = azurerm_subnet.nodes.id
+    # Without zones the nodes all sit in one datacenter, and the zone spread
+    # in k8s/base has nothing to spread across.
+    zones = ["1", "2", "3"]
 
     upgrade_settings {
       max_surge = "33%"
@@ -61,7 +65,8 @@ resource "azurerm_kubernetes_cluster" "main" {
     load_balancer_sku = "standard"
   }
 
-  # Microsoft Entra ID for user sign-in, with Kubernetes RBAC.
+  # Microsoft Entra ID for user sign-in, with Azure RBAC deciding what each
+  # user can do in the cluster.
   azure_active_directory_role_based_access_control {
     tenant_id          = data.azurerm_client_config.current.tenant_id
     azure_rbac_enabled = true

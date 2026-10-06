@@ -58,6 +58,9 @@ module "eks" {
     aws-ebs-csi-driver = {
       service_account_role_arn = module.ebs_csi_irsa.iam_role_arn
     }
+    # The HorizontalPodAutoscaler in k8s/base reads CPU from metrics-server.
+    # AKS and GKE ship it; EKS doesn't, and without it the HPA never scales.
+    metrics-server = {}
   }
 
   eks_managed_node_groups = {
